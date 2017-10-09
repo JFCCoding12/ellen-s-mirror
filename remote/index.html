@@ -11,13 +11,26 @@
     <link rel="icon" href="../../favicon.ico">
 
     <title>Smart Mirror Remote</title>
-
+    <script type="text/javascript" src="script.js"></script>
+    <script type="text/javascript" src="glmatrix.js"></script>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u"
         crossorigin="anonymous">
     <link href="style.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 </head>
 
-<body>
+<body onload='load()'>
+<script>
+function load(){
+validateAuthentication();
+pollCurrentlyPlaying(1500);
+document.getElementById('playbutton').style.display = 'block'
+document.getElementById('pausebutton').style.display = 'none'
+}
+    </script>
+
+
+<script type="text/javascript" scr="/script.js"></script> 
 <!-- Navbar -->
 <nav class="navbar navbar-inverse navbar-fixed-top" id="navbar-placeHolder">
 </nav>
@@ -62,18 +75,31 @@
             </div>
         </div>
         <div class="col-md-6">
-            <h3>Configure</h3>
-            <p>Click the gear on the top right to configure your mirror. For more information see the <a href="https://docs.smart-mirror.io">docs</a>.</p>
         </div>
     </div>
     <div class="row">
         <div class="col-md-6">
-            <h3>Development</h3>
-            <p>For details and development see: <a href="https://docs.smart-mirror.io/docs/development_and_contributing.html">Development and Contributing</a>.</p>
         </div>
         <form class="col-md-6 col-md-offset-3">
             <div class="checkbox">
                 <label><input id="devtools" type="checkbox"> Show Devtools</label>
+                </div>
+            <form class="col-md-6 col-md-offset-3">
+            <h3>Spotify</h3>
+               <div id="loginshit" class="btn btn-default" style="display:visible"><a onclick="login()">Sign in to Spotify</a></div>
+               <h4>How to use</h4>
+               <div>Play something on your phone or laptop, connect to the raspberry pi via the connect menu. Once music is playing you can then control it all from this page!</div>
+               <div id="spotifycontrols" style="display:none">
+               <div id="playbutton" class="btn btn-default" role='button'><a onclick="play()"><i class="material-icons">play_arrow</i></a></div>
+               <div id="pausebutton" class="btn btn-default" role='button'><a onclick="pause()"><i class="material-icons">pause</i></a></div>
+               <div><h1></h1></div>
+               <center><div id="lastbutton" class="btn btn-default" role='button'><a onclick="last()"><i class="material-icons">skip_previous</i></a></div>
+               <div id="shuffle" class="btn btn-default"><a onclick="shuffle()"><i class="material-icons">repeat</i></a></div>
+               <div id="skipbutton" class="btn btn-default" role='button'><a onclick="skip()"><i class="material-icons">skip_next</i></a></div>
+                <div id="toast" class="toast"><span id="text"></span><span id="text2"></span></div></center>
+                <p>Volume: <span id="demo"></span></p>
+                <input type="range" min="0" max="100" value="50" class="slider" id="myRange">
+                </div>
             </div>
         </form>
     </div>
@@ -82,8 +108,41 @@
 
     <div id="connection-bar" class="container">
         <p id="connection-text" class="text-muted">Connecting...</p>
+
     </div>
 </footer>
+<script>
+var slider = document.getElementById("myRange");
+var output = document.getElementById("demo");
+output.innerHTML = slider.value;
+
+slider.oninput = function() {
+  output.innerHTML = this.value;
+  sendCommand('PUT', 'volume', 'volume_percent='+this.value);
+}
+</script>
+<script type="text/javascript">
+function skip(){
+    sendCommand('POST', 'next');
+
+}
+function shuffle() {
+    sendCommand('PUT', 'shuffle', 'state=true')
+}
+function last(){
+    sendCommand('POST', 'previous');
+}
+function pause() {
+    sendCommand('PUT', 'pause');
+    document.getElementById('pausebutton').style.display = 'none'
+    document.getElementById('playbutton').style.display = 'block'
+}
+function play() {
+    sendCommand('PUT', 'play');
+        document.getElementById('playbutton').style.display = 'none'
+        document.getElementById('pausebutton').style.display = 'block'
+}
+</script>
 
 <!-- Smart Mirror remote JavaScript
 ================================================== -->
@@ -96,6 +155,7 @@
 <script src="https://use.fontawesome.com/741cbe0233.js"></script>
 
 <script src="/remote-client.js"></script>
+
 
 </body>
 

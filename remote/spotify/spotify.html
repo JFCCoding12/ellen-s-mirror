@@ -1,0 +1,91 @@
+<html>
+<head><meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <title>Spotify Voice Control + sexy interface</title>
+  
+  <link rel="stylesheet" href="1style.css" />
+  <link rel="stylesheet" href="gh-fork-ribbon.min.css" />
+  <script type="text/javascript" src="glmatrix.js"></script>
+  <script type="text/javascript" src="script.js"></script>
+</head>
+<body>
+    
+ <canvas id="canvas" style="border: none; width:100%; height:100%;" width="1200" height="800"></canvas><br/>
+  <div id="biglogin" class="biglogin"><a onclick="login()">Sign in to Spotify</a></div>
+  <div id="toast" class="toast"><span id="text"></span><span id="text2"></span></div>
+  <div class="trackposition" id="trackposition"><div class="fill" id="trackpositionfill"></div></div>
+
+
+</body>
+
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/annyang/2.6.0/annyang.min.js"></script>
+<script>
+function reload(){
+    location.reload();
+}
+if (annyang) {
+  // Let's define our first command. First the text we expect, and then the function it should call
+  var commands = {
+    'test': function() {
+      alert("Yes");
+    },
+    'Play': function() {
+        sendCommand('PUT', 'play');
+    },
+    'pause': function() {
+        sendCommand('PUT', 'pause');
+    },
+    'skip': function() {
+        sendCommand('POST', 'next');
+    },
+    'next': function() {
+        sendCommand('POST', 'next');
+    },
+    
+    'last': function() {
+        sendCommand('POST', 'previous');
+    },
+    'play (some) country':function() {
+        sendPlayContext('spotify:user:spotify:playlist:37i9dQZF1DWYnwbYQ5HnZU');
+    }, 
+    'play my playlist': function() {
+        sendPlayContext('spotify:user:12124460987:playlist:507Fa1Sfjk4TMckMWEhFt3');
+    },
+    'set the volume at *amount': function(amount) {
+        sendCommand('PUT', 'volume', 'volume_percent='+amount);
+    },
+    'turn it (up) half way (up)': function(){
+        sendCommand('PUT', 'volume', 'volume_percent=50');
+    },
+    'turn it (up) all the way (up)': function(){
+        sendCommand('PUT', 'volume', 'volume_percent=100');
+    },
+    'mute it': function() {
+        sendCommand('PUT', 'volume', 'volume_percent=0');
+    },
+    'play by *artist':function(artist) {
+        sendCommand('GET', 'q='+artist, 'type=artist');
+    },
+    'connect':function() {
+        hideLogin();
+        accessToken = 'BQBJ2cQnZevfTx-YtVvr64HH3syY5zvmA1Wlf-R_2VKYJNPFlMgW7hqm01Qewkj9QY_VEuU0ycGHfwvVWPGKiJdlsLkP7DJLLU9GKWdbZPd7qiz5KsTMM-YoTU-EFsglgKlCJ67aOy1S2MuWGn-pPvhXCA';
+        console.log(accessToken + 'Set');
+        pollCurrentlyPlaying(2000);
+    }
+
+    
+  };
+
+  // Add our commands to annyang
+  annyang.addCommands(commands);
+  annyang.addCallback('result', function(phrases) {
+    console.log("I think the user said: ", phrases[0]);
+     console.log("But then again, it could be any of the following: ", phrases);
+  });
+  // Start listening. You can call this here, or attach this call to an event, button, etc.
+  annyang.debug();
+  annyang.start();
+}
+</script>
+
+</html>
