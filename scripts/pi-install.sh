@@ -1,5 +1,6 @@
 #!/bin/bash
-
+echo "One moment please!"
+sleep 10
 set -e
 
 # Supported versions of node: v4.x, v5.x
