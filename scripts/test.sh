@@ -1,3 +1,5 @@
+set -e
+
 # Terminal Colors
 red=$'\e[1;31m'
 grn=$'\e[1;32m'
